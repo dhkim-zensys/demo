@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+    api:
+        build: .
+        image: tunix/docker-compose-demo
+        ports:
+            - "8080"
+        links:
+            - db:demodb
+        command: ["/source/wait-for-it.sh", "demodb:3306", "--", "java", "-jar", "/app/demo.jar"]
+
+    db:
+        image: mysql
+        environment:
+            - MYSQL_ALLOW_EMPTY_PASSWORD=true
+            - MYSQL_DATABASE=demo
+            - MYSQL_USER=user
+            - MYSQL_PASSWORD=test
