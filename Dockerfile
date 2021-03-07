@@ -1,5 +1,6 @@
 FROM maven:3-jdk-8
 MAINTAINER Alper Kanat <me@alperkan.at>
+ENV TZ=Asia/Seoul
 
 COPY . /source
 WORKDIR /source
