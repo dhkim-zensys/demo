@@ -130,9 +130,9 @@ public class BatchController {
 		return entity;
 	}
 	
-//	@ApiOperation(value="Batch Test[Stop]", notes="Batch Test[Stop]")
-//	@PutMapping(value="/stopjob")
-//	public ResponseEntity<?> batchStop() {
+	@ApiOperation(value="Batch Test[Stop]", notes="Batch Test[Stop]")
+	@PutMapping(value="/stopjob")
+	public ResponseEntity<?> batchStop() {
 //		try {
 //			stopBatchJobs();
 //		}catch (Exception e) {
@@ -140,8 +140,8 @@ public class BatchController {
 //			e.printStackTrace();
 //			entity = new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
 //		}
-//		return entity;
-//	}
+		return entity;
+	}
 	
 	@Bean
 	public SimpleJobLauncher simpleJobLauncher() {
