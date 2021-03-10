@@ -77,9 +77,10 @@ public class MemberController {
 		return entity;
 	}
 	
+	
 	@ApiOperation(value="사용자리스트 조회2", notes="사용자리스트 조회2")
 	@GetMapping(value = "/members2")
-	public ResponseEntity<?> getMemberLis2t(){
+	public ResponseEntity<?> getMemberList2(){
 		try {
 			List<Member> list = memberService.findAll();
 			
@@ -113,8 +114,6 @@ public class MemberController {
 		}
 		return entity;
 	}
-	
-	
 
 	@ApiOperation(value="사용자 삭제", notes="사용자 삭제")
 	@DeleteMapping(value = "/{id}")
