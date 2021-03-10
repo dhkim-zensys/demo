@@ -1,4 +1,4 @@
-FROM maven:3-jdk-8
+FROM container-reg.kr.ncr.ntruss.com/app:latest
 MAINTAINER Alper Kanat <me@alperkan.at>
 ENV TZ=Asia/Seoul
 
