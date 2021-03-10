@@ -80,7 +80,7 @@ public class MemberController {
 	
 	
 	
-	@ApiOperation(value="사용자정보 조회", notes="사용자정보 조회")
+	@ApiOperation(value="사용자정보 조회2", notes="사용자정보 조회2")
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<?> getMember(@PathVariable("id") String id){
 		try {
