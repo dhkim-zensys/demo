@@ -80,7 +80,7 @@ public class MemberController {
 	
 	@ApiOperation(value="사용자리스트 조회2", notes="사용자리스트 조회2")
 	@GetMapping(value = "/members2")
-	public ResponseEntity<?> getMemberList(){
+	public ResponseEntity<?> getMemberList2(){
 		try {
 			List<Member> list = memberService.findAll();
 			
