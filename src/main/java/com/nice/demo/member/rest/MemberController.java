@@ -78,7 +78,27 @@ public class MemberController {
 	}
 	
 	
+<<<<<<< HEAD
 	
+=======
+	@ApiOperation(value="사용자리스트 조회2", notes="사용자리스트 조회2")
+	@GetMapping(value = "/members2")
+	public ResponseEntity<?> getMemberList2(){
+		try {
+			List<Member> list = memberService.findAll();
+			
+			HashMap<String, Object> map = new HashMap<>();
+			map.put("list", list);
+			
+			entity = new ResponseEntity<List<Member> >(list, HttpStatus.OK);
+		}catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			entity = new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+		return entity;
+	}
+>>>>>>> branch 'master' of https://github.com/dhkim-zensys/demo.git
 	
 	
 	@ApiOperation(value="사용자정보 조회", notes="사용자정보 조회")
