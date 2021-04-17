@@ -102,7 +102,7 @@ public class UpbitNotify {
 			int id = (Integer)row.get("id");
 			
 			//텔레그램 통보
-			telegram.send((String)row.get("title"));
+			//telegram.send((String)row.get("title"));
 			
 			if( id > maxId) {
 				
