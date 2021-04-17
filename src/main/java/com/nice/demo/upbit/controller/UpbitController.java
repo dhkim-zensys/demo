@@ -80,6 +80,46 @@ public class UpbitController {
     	
 		return entity;
 	}
+    
+    @ApiOperation(value="입출금 현황", notes="입출금 현황")
+   	@GetMapping(value = "/v1/status/wallet")
+   	public ResponseEntity<?> statusWallet(){
+       	
+       	
+            Algorithm algorithm = Algorithm.HMAC256(secretKey);
+            String jwtToken = JWT.create()
+                    .withClaim("access_key", accessKey)
+                    .withClaim("nonce", UUID.randomUUID().toString())
+                    .sign(algorithm);
+
+            String authenticationToken = "Bearer " + jwtToken;
+
+            try {
+                HttpClient client = HttpClientBuilder.create().build();
+                HttpGet request = new HttpGet(serverUrl + "/v1/status/wallet");
+                request.setHeader("Content-Type", "application/json");
+                request.addHeader("Authorization", authenticationToken);
+
+                HttpResponse response = client.execute(request);
+                //HttpEntity upbitEntity = response.getEntity();
+
+                
+                String jsonResponse = EntityUtils.toString(response.getEntity(), "UTF-8");
+                
+                System.out.println(jsonResponse);
+                
+               		 
+                entity = new ResponseEntity<String>(jsonResponse, HttpStatus.OK);
+                
+                
+            } catch (IOException e) {
+                e.printStackTrace();
+                entity = new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            }
+       	
+       	
+   		return entity;
+   	}
 	
 	
 	
