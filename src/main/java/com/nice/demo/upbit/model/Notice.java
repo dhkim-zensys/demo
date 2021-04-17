@@ -1,4 +1,4 @@
-package com.nice.demo.model;
+package com.nice.demo.upbit.model;
 
 import java.io.Serializable;
 
@@ -21,7 +21,7 @@ public class Notice implements Serializable{
 
 	@Id // PK 필드
 	@NotNull
-	@ApiParam(value = "it", required = true)
+	@ApiParam(value = "id", required = true)
 	@Column(columnDefinition="varchar(255)", nullable = false, insertable=true, updatable=false)
 	private String id;
 	

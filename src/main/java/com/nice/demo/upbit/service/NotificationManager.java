@@ -1,4 +1,4 @@
-package com.nice.demo.service;
+package com.nice.demo.upbit.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;

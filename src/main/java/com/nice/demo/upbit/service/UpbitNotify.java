@@ -1,4 +1,4 @@
-package com.nice.demo.service;
+package com.nice.demo.upbit.service;
 
 
 
@@ -25,8 +25,9 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nice.demo.model.Notice;
-import com.nice.demo.repository.NoticeRepository;
+import com.nice.demo.upbit.model.Notice;
+import com.nice.demo.upbit.repository.NoticeRepository;
+
 
 @Component
 public class UpbitNotify {

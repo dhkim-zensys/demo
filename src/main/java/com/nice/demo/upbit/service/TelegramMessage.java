@@ -1,4 +1,4 @@
-package com.nice.demo.service;
+package com.nice.demo.upbit.service;
 
 import com.google.gson.annotations.SerializedName;
 

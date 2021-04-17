@@ -1,9 +1,11 @@
-package com.nice.demo.repository;
+package com.nice.demo.upbit.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import com.nice.demo.model.Notice;
+import com.nice.demo.upbit.model.Notice;
+
+
 
 public interface NoticeRepository extends JpaRepository<Notice, Long> {
 	
