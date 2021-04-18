@@ -42,7 +42,7 @@ public class HuobiNotify {
 	@Autowired
 	private NotificationManager telegram;
 	
-	@Scheduled(fixedRate = 10000)
+	@Scheduled(fixedRate = 1800000)
     public void cronJobSch() {
       SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
       Date now = new Date();
