@@ -1,4 +1,4 @@
-package com.nice.demo.upbit.service;
+package com.nice.demo.huobi.service;
 
 
 
@@ -6,11 +6,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -30,14 +25,14 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nice.demo.upbit.model.Notice;
 import com.nice.demo.upbit.repository.NoticeRepository;
+import com.nice.demo.upbit.service.NotificationManager;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class UpbitNotify {
+public class HuobiNotify {
 	
 
 
@@ -47,7 +42,7 @@ public class UpbitNotify {
 	@Autowired
 	private NotificationManager telegram;
 	
-	@Scheduled(fixedRate = 30000)
+	@Scheduled(fixedRate = 10000)
     public void cronJobSch() {
       SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
       Date now = new Date();
@@ -62,15 +57,18 @@ public class UpbitNotify {
 	  }
       
    }
-	
+	/**
+	 * @throws URISyntaxException
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
 	public void getNotify() throws URISyntaxException, ClientProtocolException, IOException {
 
 
-		URI uri = new URI("https://api-manager.upbit.com/api/v1/notices"); 
+		URI uri = new URI("https://api-cloud.huobi.co.kr/market/depth"); 
 		uri = new URIBuilder(uri)
-				.addParameter("page", "1")
-				.addParameter("per_page", "20")
-				.addParameter("thread_name", "general")
+				.addParameter("symbol", "usdtkrw")
+				.addParameter("type", "step1")
 				.build(); 
 		
 		HttpClient httpClient = HttpClientBuilder.create().build(); 
@@ -88,59 +86,35 @@ public class UpbitNotify {
 		Map<String, Object> map = new HashMap<>(); 
 		map = mapper.readValue(content, new TypeReference<Map<String, Object>>(){}); 
 		
-		System.out.println(map.get("data"));
+		log.info(map.get("tick").toString());
 		
-		Map<String,Object> data = (Map)map.get("data");
+		Map tick = (Map)map.get("tick");
 		
-		List<Map<String,Object>> list = (List<Map<String, Object>>) data.get("list");
+		List bids = (List) tick.get("bids");
+		List asks = (List) tick.get("asks");
+		List asks1 = (List) asks.get(0);
 		
-		Notice notice = new Notice();
 		
+		log.info("asks:{}", asks1.get(0));
 		
-		int maxId;
-		try {
-			maxId = Integer.parseInt(noticeRepository.selectMax());
-		} catch (NumberFormatException e) {
-			maxId = 1;
-		}
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+	    Date now = new Date();
+	    String strDate = sdf.format(now);
+	    
+	    double usdtkrw = (Double)asks1.get(0);
+	    double usd = 1115;
+	    double rt = (double) ((usdtkrw-usd)/usd*100); 
+	    
+
+	      
+	    log.info(String.format("%1$,.2f", rt));  
+		telegram.sendPrivate(strDate +"\n" + "usdt/krw:"+ asks1.get(0) + "원,usd:1115원, 김프:"+String.format("%1$,.2f", rt)+"%");
+		
 		
 
-		for( Map<String,Object> row : list ) {
-			
-			int id = (Integer)row.get("id");
-			
-			//텔레그램 통보
-			//telegram.send((String)row.get("title"));
-			
-			if( id > maxId) {
-				
-				notice.setId(String.valueOf(row.get("id")));
-				notice.setTitle((String)row.get("title"));
-				notice.setCreated_at((String)row.get("created_at"));
-				notice.setCreated_at((String)row.get("updated_at"));
-				
-				noticeRepository.save(notice);
-				
-//				LocalDate date = LocalDate.now(); // 2018-06-06
-//				LocalTime time = LocalTime.now(); // 02:34:50.223
-//				LocalDateTime dateTime = LocalDateTime.now(); // 2018-06-06T02:34:50.223
-//				ZonedDateTime dateTimeInKr = ZonedDateTime.now(); // 2018-06-06T02:34:50.223+09:00[Asia/Seoul]
-
-				ZonedDateTime createTime = ZonedDateTime.parse((String)row.get("created_at"));
-				
-				DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("yyyy-MM-dd - HH:mm:ss z");
-				String formattedString2 = createTime.format(formatter2);
-				
-				log.info( formattedString2 + "\n" + (String)row.get("title") + "\n" + "https://www.upbit.com/service_center/notice?id="+String.valueOf(row.get("id")));
-				
-				//텔레그램 통보
-				telegram.send(formattedString2 +"\n" + (String)row.get("title") + "\n");
-			}
-			
-			
-		}
 
 	}	
 
 }
+
 

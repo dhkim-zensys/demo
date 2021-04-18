@@ -18,12 +18,33 @@ public class NotificationManager {
 	@Value("${notification.telegram.chat.id}") 
 	private String chatId;
 	
+	@Value("${notification.telegram.chat.id.private}") 
+	private String chatIdPrivate;
+	
 	
 	public void send(String content) {
 		//텔레그램 통보
 		String url = "https://api.telegram.org/bot" + token + "/sendMessage"; 
 		try { 
 			TelegramMessage telegramMessage = new TelegramMessage(chatId, content); 
+			
+			String param = new Gson().toJson(telegramMessage); 
+			RestTemplate restTemplate = new RestTemplate(); 
+			HttpHeaders headers = new HttpHeaders(); 
+			headers.set("Content-Type", MediaType.APPLICATION_JSON_VALUE); // send the post request 
+			HttpEntity<String> entity2 = new HttpEntity<>(param, headers); 
+			restTemplate.postForEntity(url, entity2, String.class); 
+		} catch (Exception e) { 
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public void sendPrivate(String content) {
+		//텔레그램 통보
+		String url = "https://api.telegram.org/bot" + token + "/sendMessage"; 
+		try { 
+			TelegramMessage telegramMessage = new TelegramMessage(chatIdPrivate, content); 
 			
 			String param = new Gson().toJson(telegramMessage); 
 			RestTemplate restTemplate = new RestTemplate(); 
