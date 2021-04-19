@@ -34,11 +34,6 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class HuobiNotify {
 	
-
-
-	@Autowired
-	private NoticeRepository noticeRepository;
-	
 	@Autowired
 	private NotificationManager telegram;
 	
