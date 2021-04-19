@@ -22,7 +22,7 @@ public class RESTMemberCheckProcessor  implements ItemProcessor<List<Member>, Li
 	@Override
 	public List<Member> process(List<Member> list) throws Exception{
 		logger.info(">>>>>>>>>>>>>>>>> START ItemProcessor");
-		logger.info(">>>>>>>>>>>>>>>>> KMS TEST s");
+		logger.info(">>>>>>>>>>>>>>>>> KMS TEST");
 		List<Member> outdata = new ArrayList<Member>();
 		for (Member member : list) {
 			member.setStatus(MemberStatus.INACTIVE);
