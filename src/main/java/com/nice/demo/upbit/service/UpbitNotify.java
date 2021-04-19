@@ -134,7 +134,7 @@ public class UpbitNotify {
 				log.info( formattedString2 + "\n" + (String)row.get("title") + "\n" + "https://www.upbit.com/service_center/notice?id="+String.valueOf(row.get("id")));
 				
 				//텔레그램 통보
-				telegram.send(formattedString2 +"\n" + (String)row.get("title") + "\n");
+				telegram.send(formattedString2 +"\n" + (String)row.get("title") + "\n" + "https://www.upbit.com/service_center/notice?id="+String.valueOf(row.get("id")));
 			}
 			
 			
