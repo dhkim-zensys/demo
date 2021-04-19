@@ -30,14 +30,14 @@ public class huobiController {
 
 		try {
 			if(base != null) {
-				String currency = base.getCurrency();
-				int cnt = huobiService.countByCurrency(currency);
-				if(cnt >= 1) {
-					entity = new ResponseEntity<String>("PK ERROR", HttpStatus.BAD_REQUEST);
-				}else {
+//				String currency = base.getCurrency();
+//				int cnt = huobiService.countByCurrency(currency);
+//				if(cnt >= 1) {
+//					entity = new ResponseEntity<String>("PK ERROR", HttpStatus.BAD_REQUEST);
+//				}else {
 					huobiService.save(base);
 					entity = new ResponseEntity<String>("SUCCESS", HttpStatus.OK);
-				}
+//				}
 			}else {
 				entity = new ResponseEntity<String>("NO DATA", HttpStatus.BAD_REQUEST);
 			}

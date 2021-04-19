@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.nice.demo.huobi.model.Base;
 import com.nice.demo.huobi.repository.HuobiRepository;
+import com.nice.demo.member.domain.Member;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,5 +28,11 @@ public class HuobiService {
 		huobiRepository.save(base);
 	}
 	
-
+	
+	public String findById(String currency) {
+		
+		
+		Base base = huobiRepository.findByCurrency(currency);		
+		return base.getAmount();
+	}
 }

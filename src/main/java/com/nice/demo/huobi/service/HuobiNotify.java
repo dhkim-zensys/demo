@@ -37,7 +37,12 @@ public class HuobiNotify {
 	@Autowired
 	private NotificationManager telegram;
 	
+	@Autowired
+	private HuobiService huobiService;
+	
+	
 	@Scheduled(fixedRate = 1800000)
+	//@Scheduled(fixedRate = 10000)
     public void cronJobSch() {
       SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
       Date now = new Date();
@@ -97,13 +102,15 @@ public class HuobiNotify {
 	    String strDate = sdf.format(now);
 	    
 	    double usdtkrw = (Double)asks1.get(0);
-	    double usd = 1115;
+	    
+	    
+	    String usdstr = huobiService.findById("usd");
+	    double usd = Double.parseDouble(usdstr);
 	    double rt = (double) ((usdtkrw-usd)/usd*100); 
 	    
-
 	      
 	    log.info(String.format("%1$,.2f", rt));  
-		telegram.sendPrivate(strDate +"\n" + "usdt/krw:"+ asks1.get(0) + "원,usd:1115원, 김프:"+String.format("%1$,.2f", rt)+"%");
+		telegram.sendPrivate(strDate +"\n" + "usdt/krw:"+ asks1.get(0) + "원,usd:"+ usdstr + "원, 김프:"+String.format("%1$,.2f", rt)+"%");
 		
 		
 
