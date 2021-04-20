@@ -64,7 +64,10 @@ public class HuobiNotify {
 	 */
 	public void getNotify() throws URISyntaxException, ClientProtocolException, IOException {
 
-
+		
+		
+		
+		//후오비 데더 가격 가져오기
 		URI uri = new URI("https://api-cloud.huobi.co.kr/market/depth"); 
 		uri = new URIBuilder(uri)
 				.addParameter("symbol", "usdtkrw")
@@ -104,13 +107,36 @@ public class HuobiNotify {
 	    double usdtkrw = (Double)asks1.get(0);
 	    
 	    
-	    String usdstr = huobiService.findById("usd");
-	    double usd = Double.parseDouble(usdstr);
-	    double rt = (double) ((usdtkrw-usd)/usd*100); 
+	    //String usdstr = huobiService.findById("usd");
+	    //double usd = Double.parseDouble(usdstr);
 	    
+	    
+	    //환율 가져오기
+	  	String usdkrw_rt_url = "https://quotation-api-cdn.dunamu.com/v1/forex/recent";
+	  		
+	    
+	    uri = new URI(usdkrw_rt_url); 
+		uri = new URIBuilder(uri)
+				.addParameter("codes", "FRX.KRWUSD")
+				.build();
+		
+		httpClient = HttpClientBuilder.create().build(); 
+		response = httpClient.execute(new HttpGet(uri)); // post 요청은 HttpPost()를 사용하면 된다. 
+		entity = response.getEntity(); 
+		content = EntityUtils.toString(entity); 
+		
+		List list = mapper.readValue(content, new TypeReference<List<Map<String, Object>>>(){});
+		
+		double d_usd = (double) ((Map<String,Object>) list.get(0)).get("basePrice");
+		
+		String str_usd = String.valueOf(((Map<String,Object>) list.get(0)).get("basePrice"));
+		
+		log.info(str_usd);
+		
+		double rt = (double) ((usdtkrw-d_usd)/d_usd*100); 
 	      
 	    log.info(String.format("%1$,.2f", rt));  
-		telegram.sendPrivate(strDate +"\n" + "usdt/krw:"+ asks1.get(0) + "원,usd:"+ usdstr + "원, 김프:"+String.format("%1$,.2f", rt)+"%");
+		telegram.sendPrivate(strDate +"\n" + "usdt/krw:"+ asks1.get(0) + "원,usd:"+ str_usd + "원, 김프:"+String.format("%1$,.2f", rt)+"%");
 		
 		
 
