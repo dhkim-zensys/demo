@@ -21,6 +21,9 @@ public class NotificationManager {
 	@Value("${notification.telegram.chat.id.private}") 
 	private String chatIdPrivate;
 	
+	@Value("${notification.telegram.bot.token.private}")
+	private String tokenPrivate;
+	
 	
 	public void send(String content) {
 		//텔레그램 통보
@@ -42,7 +45,7 @@ public class NotificationManager {
 	
 	public void sendPrivate(String content) {
 		//텔레그램 통보
-		String url = "https://api.telegram.org/bot" + token + "/sendMessage"; 
+		String url = "https://api.telegram.org/bot" + tokenPrivate + "/sendMessage"; 
 		try { 
 			TelegramMessage telegramMessage = new TelegramMessage(chatIdPrivate, content); 
 			
