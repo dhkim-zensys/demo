@@ -41,7 +41,7 @@ public class HuobiNotify {
 	private HuobiService huobiService;
 	
 	
-	@Scheduled(fixedRate = 1800000)
+	//@Scheduled(fixedRate = 1800000)
 	//@Scheduled(fixedRate = 10000)
     public void cronJobSch() {
       SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
@@ -64,8 +64,6 @@ public class HuobiNotify {
 	 */
 	public void getNotify() throws URISyntaxException, ClientProtocolException, IOException {
 
-		
-		
 		
 		//후오비 데더 가격 가져오기
 		URI uri = new URI("https://api-cloud.huobi.co.kr/market/depth"); 

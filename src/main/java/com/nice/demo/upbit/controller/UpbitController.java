@@ -1,10 +1,11 @@
 package com.nice.demo.upbit.controller;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.UUID;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.nice.demo.upbit.service.AccountService;
+import com.nice.demo.upbit.service.UpbitService;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -39,7 +41,31 @@ public class UpbitController {
 	@Autowired
 	AccountService accountService;
 	
+	@Autowired
+	UpbitService upbitService;
+	
 	ResponseEntity<?> entity = null;
+	
+	@ApiOperation(value="코인 매매 시작", notes="코인 매매 시작")
+	@GetMapping(value = "/v1/tradeStart")
+	public ResponseEntity<?> tradeStart(String currency, int count) throws ClientProtocolException, URISyntaxException, IOException{
+		 
+		
+		upbitService.tradeStart(currency, count);
+		
+		return entity;
+	}
+	
+	
+	@ApiOperation(value="코인 매매 중지", notes="코인 매매 중지")
+	@GetMapping(value = "/v1/tradeEnd")
+	public ResponseEntity<?> tradeEnd(String currency){
+		 
+		
+		upbitService.tradeEnd(currency);
+		
+		return entity;
+	}
 	
     @ApiOperation(value="자산 조회", notes="자산 조회")
 	@GetMapping(value = "/v1/accounts")
