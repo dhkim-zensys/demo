@@ -47,7 +47,7 @@ public class UpbitNotify {
 	@Autowired
 	private NotificationManager telegram;
 	
-	//@Scheduled(fixedRate = 30000)
+	@Scheduled(fixedRate = 30000)
     public void cronJobSch() {
       SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
       Date now = new Date();
