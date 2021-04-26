@@ -121,6 +121,8 @@ public class UpbitService {
 		double buy_price = 0L;
 		double sell_price = 0L;
 		
+		telegram.sendPrivate("변동성 돌파 매수 목표가 감시 시작 " + String.format("%.8f", target_price) );
+		
 		while(true) {
 			
 			Date time = new Date();
@@ -144,6 +146,7 @@ public class UpbitService {
 				
 				//매수금액
 				log.info("변동성 돌파 매도{} 수익률{}",String.format("%.8f", sell_price), String.format("%.8f", sell_price/buy_price*100) );
+				telegram.sendPrivate("변동성 돌파 매도{"+String.format("%.8f", sell_price)+"} 수익률{" + String.format("%.8f", sell_price/buy_price*100) +"}");
 				
 				break;
 			}
