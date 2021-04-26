@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -14,11 +17,13 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nice.demo.upbit.model.UpbitAccount;
+import com.nice.demo.upbit.model.UpbitMarketData;
 import com.nice.demo.upbit.model.UpbitOrderBook;
 
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +36,144 @@ public class UpbitService {
 	@Autowired
 	private AccountService accountService; 
 	
+	@Autowired
+	private MarketService marketService;
+	
+	@Autowired
+	private NotificationManager telegram;
+	
 	private boolean bTrade = false; 
+	
+	/**
+	 *  매일 12시 시작
+	 *  
+	 *  1. 전일 하루 변동을 체크한다.
+	 *  2. 상승장이여야 한다.
+	 *  3. 목표가를 정한다.
+	 *  4. 1분마다 가격을 정하고 정해진 목표가에 도달시 매수한다.
+	 *  5. 자산조회를 한다.
+	 *  6. 잘 매수했으면 텔레그램 메시지를 보낸다.
+	 *  
+	 *  7. 해당 자산이 있으면 모두 매도한다.
+	 *  
+	 *  
+	 * @param currency
+	 * @throws URISyntaxException
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
+
+	@Scheduled(cron="0 0 12 * * *") 
+	public void moveTradeStart(String currency) throws URISyntaxException, ClientProtocolException, IOException {
+		
+		
+		String market = "KRW-" + currency;
+		
+		
+		bTrade = true;		
+		
+		
+		//2. 전일 변동량을 체크한다.
+		//https://api.upbit.com/v1/candles/minutes/60?market=KRW-BTC&count=24
+		UpbitMarketData hours_24 = marketService.getHours(currency);		//24시간 전에 데이타 summary
+		
+		double trade_price = hours_24.getTrade_price();		//현재가
+		
+		log.info("현재가.......{}", String.format("%.8f", trade_price));
+		
+		//3. 상승장인지 체크한다.
+		double trade_price_5days_avg = marketService.get5DaysAvg(currency);
+		
+		log.info("5일 평균가.......{}", String.format("%.8f", trade_price_5days_avg));
+		
+		
+		//현재 시간이 낮 11시 50분이면 종료
+		SimpleDateFormat format1 = new SimpleDateFormat ( "yyyy-MM-dd HH:mm:ss");
+		Date startTime = new Date();
+		
+		Calendar cal = Calendar.getInstance();
+
+		cal.setTime(startTime);
+		log.info("현재시각..............{}",format1.format(cal.getTime()));
+		
+		cal.add(Calendar.HOUR, 23 );
+		cal.add(Calendar.MINUTE, 50);
+		
+		String endTime = format1.format(cal.getTime()); 
+		
+		log.info("종료예정시각..............{}",endTime );
+		
+		//목표가 설정
+		double low_price = hours_24.getLow_price();				//최저가
+		double high_price = hours_24.getHigh_price();			//최고가
+		double opening_price = hours_24.getOpening_price();		//시가
+		
+		double target_price = opening_price + ( high_price - low_price ) * 0.5;
+		
+		
+		log.info("매수목표가.......{}, 전일 차이 {}", String.format("%.8f", target_price), String.format("%.8f", high_price - low_price));
+		
+		double buy_price = 0L;
+		double sell_price = 0L;
+		
+		while(true) {
+			
+			Date time = new Date();
+			
+			String now = format1.format(time);
+			log.info(now);
+			
+			//목표가에 도달하는지 체크
+			UpbitOrderBook order = marketService.getNowData(currency);
+			Double ask_price = order.getOrderbook_units().get(0).getAsk_price();	//파는 가격	        
+			Double bid_price = order.getOrderbook_units().get(0).getBid_price();	//사는 가격	
+			
+			log.info("ask_price.......{}    bid_price....{}", String.format("%.8f", ask_price), String.format("%.8f", bid_price));
+		
+			
+			if( time.compareTo(cal.getTime())>=0) {		//현재시간이 시작시간 + 23시 50분 보다 크면 종료
+				
+				
+				//현재가
+				
+				
+				//매수금액
+				log.info("변동성 돌파 매도{} 수익률{}",String.format("%.8f", sell_price), String.format("%.8f", sell_price/buy_price*100) );
+				
+				break;
+			}
+			
+			
+			//목표가 매수
+			if(  bid_price >  trade_price_5days_avg) {			//현재가격이 5일 평균가보다 높고
+				
+				if(bid_price >= target_price ) {		//현재가가격이 목표매수가보다 높다면 매수
+					
+					buy_price = bid_price;
+					
+					log.info("변동성 돌파 매수{}",String.format("%.8f", buy_price) );
+					
+					telegram.sendPrivate("변동성 돌파 매수" + String.format("%.8f", buy_price) );
+					
+					
+				}
+				
+			}
+			
+			
+			
+			try {
+				Thread.sleep(60*1000); //1분 대기
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
+		}
+		
+		
+		
+		return;
+	}
 	
 	public void tradeStart(String currency, int count) throws URISyntaxException, ClientProtocolException, IOException {
 		

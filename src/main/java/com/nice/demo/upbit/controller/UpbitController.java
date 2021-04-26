@@ -46,7 +46,17 @@ public class UpbitController {
 	
 	ResponseEntity<?> entity = null;
 	
-	@ApiOperation(value="코인 매매 시작", notes="코인 매매 시작")
+	@ApiOperation(value="변동성 돌파  코인 매매 시작", notes="변동성 돌파  코인 매매 시작")
+	@GetMapping(value = "/v1/moveTradeStart")
+	public ResponseEntity<?> moveTradeStart(String currency) throws ClientProtocolException, URISyntaxException, IOException{
+		 
+		
+		upbitService.moveTradeStart(currency);
+		
+		return entity;
+	}
+	
+	@ApiOperation(value="단타 코인 매매 시작", notes="단타 코인 매매 시작")
 	@GetMapping(value = "/v1/tradeStart")
 	public ResponseEntity<?> tradeStart(String currency, int count) throws ClientProtocolException, URISyntaxException, IOException{
 		 
