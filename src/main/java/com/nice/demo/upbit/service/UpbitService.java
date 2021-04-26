@@ -44,6 +44,12 @@ public class UpbitService {
 	
 	private boolean bTrade = false; 
 	
+	@Scheduled(cron="0 0 12 * * *") 
+	public void moveTradeStart() throws URISyntaxException, ClientProtocolException, IOException {
+		
+		moveTradeStart("BTC");
+	}
+	
 	/**
 	 *  매일 12시 시작
 	 *  
@@ -63,7 +69,6 @@ public class UpbitService {
 	 * @throws IOException
 	 */
 
-	@Scheduled(cron="0 0 12 * * *") 
 	public void moveTradeStart(String currency) throws URISyntaxException, ClientProtocolException, IOException {
 		
 		
