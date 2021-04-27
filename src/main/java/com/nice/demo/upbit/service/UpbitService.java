@@ -47,7 +47,16 @@ public class UpbitService {
 	@Scheduled(cron="0 0 12 * * *") 
 	public void moveTradeStart() throws URISyntaxException, ClientProtocolException, IOException {
 		
-		moveTradeStart("BTC");
+		moveTradeStart("BTC");		//1
+		moveTradeStart("XRP");		//2
+		moveTradeStart("DAWN");		//3
+		moveTradeStart("BTT");		//4
+		moveTradeStart("DOGE");		//5
+		moveTradeStart("STRK");		//6
+		moveTradeStart("VET");		//7
+		moveTradeStart("HIVE");		//8
+		moveTradeStart("SRM");		//9
+		moveTradeStart("ETC");		//10
 	}
 	
 	/**
@@ -84,12 +93,12 @@ public class UpbitService {
 		
 		double trade_price = hours_24.getTrade_price();		//현재가
 		
-		log.info("현재가.......{}", String.format("%.8f", trade_price));
+		log.info("[{}] 현재가.......{}", currency, String.format("%.8f", trade_price));
 		
 		//3. 상승장인지 체크한다.
 		double trade_price_5days_avg = marketService.get5DaysAvg(currency);
 		
-		log.info("5일 평균가.......{}", String.format("%.8f", trade_price_5days_avg));
+		log.info("[{}] 5일 평균가.......{}", currency, String.format("%.8f", trade_price_5days_avg));
 		
 		
 		//현재 시간이 낮 11시 50분이면 종료
@@ -99,14 +108,16 @@ public class UpbitService {
 		Calendar cal = Calendar.getInstance();
 
 		cal.setTime(startTime);
-		log.info("현재시각..............{}",format1.format(cal.getTime()));
+		log.info("[{}] 현재시각..............{}",currency, format1.format(cal.getTime()));
 		
+		//cal.setTime(date);
+
 		cal.add(Calendar.HOUR, 23 );
 		cal.add(Calendar.MINUTE, 50);
 		
 		String endTime = format1.format(cal.getTime()); 
 		
-		log.info("종료예정시각..............{}",endTime );
+		log.info("[{}] 종료예정시각..............{}",currency, endTime );
 		
 		//목표가 설정
 		double low_price = hours_24.getLow_price();				//최저가
@@ -116,12 +127,12 @@ public class UpbitService {
 		double target_price = opening_price + ( high_price - low_price ) * 0.5;
 		
 		
-		log.info("매수목표가.......{}, 전일 차이 {}", String.format("%.8f", target_price), String.format("%.8f", high_price - low_price));
+		log.info("[{}] 매수목표가.......{}, 전일 차이 {}", currency, String.format("%.8f", target_price), String.format("%.8f", high_price - low_price));
 		
 		double buy_price = 0L;
 		double sell_price = 0L;
 		
-		telegram.sendPrivate("변동성 돌파 매수 목표가 감시 시작 " + String.format("%.8f", target_price) );
+		telegram.sendPrivate("["+currency+"] 변동성 돌파 매수 목표가 감시 시작.... 타겟금액:" + String.format("%.8f", target_price) + ", 현재가:"+ String.format("%.8f", opening_price) );
 		
 		while(true) {
 			
@@ -135,7 +146,7 @@ public class UpbitService {
 			Double ask_price = order.getOrderbook_units().get(0).getAsk_price();	//파는 가격	        
 			Double bid_price = order.getOrderbook_units().get(0).getBid_price();	//사는 가격	
 			
-			log.info("ask_price.......{}    bid_price....{}", String.format("%.8f", ask_price), String.format("%.8f", bid_price));
+			log.info("[{}] target_price {}, ask_price {}, bid_price {}", currency, String.format("%.8f", target_price), String.format("%.8f", ask_price), String.format("%.8f", bid_price));
 		
 			
 			if( time.compareTo(cal.getTime())>=0) {		//현재시간이 시작시간 + 23시 50분 보다 크면 종료
@@ -145,8 +156,15 @@ public class UpbitService {
 				
 				
 				//매수금액
-				log.info("변동성 돌파 매도{} 수익률{}",String.format("%.8f", sell_price), String.format("%.8f", sell_price/buy_price*100) );
-				telegram.sendPrivate("변동성 돌파 매도{"+String.format("%.8f", sell_price)+"} 수익률{" + String.format("%.8f", sell_price/buy_price*100) +"}");
+				if(buy_price > 0  ) {
+					log.info("[{}] 변동성 돌파 종료 ... 매도{} 수익률{}",currency, String.format("%.8f", sell_price), String.format("%.8f", sell_price/buy_price*100) );
+					telegram.sendPrivate("["+currency +"] 변동성 돌파 매도{"+String.format("%.8f", sell_price)+"} 수익률{" + String.format("%.8f", sell_price/buy_price*100) +"}");
+					
+				}else {
+					log.info("[{}] 변동성 돌파 종료 ... 매수매도 없음",currency );
+					telegram.sendPrivate("["+currency +"] 변동성 돌파 종료..매수매도 없음");
+				}
+
 				
 				break;
 			}
@@ -159,9 +177,9 @@ public class UpbitService {
 					
 					buy_price = bid_price;
 					
-					log.info("변동성 돌파 매수{}",String.format("%.8f", buy_price) );
+					log.info("[{}] 변동성 돌파 매수{}",currency, String.format("%.8f", buy_price) );
 					
-					telegram.sendPrivate("변동성 돌파 매수" + String.format("%.8f", buy_price) );
+					telegram.sendPrivate("["+currency+"] 변동성 돌파 매수" + String.format("%.8f", buy_price) );
 					
 					
 				}
