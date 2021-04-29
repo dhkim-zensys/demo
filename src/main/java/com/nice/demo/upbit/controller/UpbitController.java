@@ -157,7 +157,16 @@ public class UpbitController {
    		return entity;
    	}
 	
-	
+    @ApiOperation(value="변동성돌파", notes="변동성돌파")
+	@GetMapping(value = "/v1/trade2")
+	public ResponseEntity<?> trade2(String currency) throws ClientProtocolException, URISyntaxException, IOException{
+		
+    	
+    	
+		upbitService.moveTradeStart(currency, 10);
+		
+		return entity;
+	}
 	
 		
 }

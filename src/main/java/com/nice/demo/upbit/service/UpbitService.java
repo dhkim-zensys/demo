@@ -17,6 +17,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,19 +45,11 @@ public class UpbitService {
 	
 	private boolean bTrade = false; 
 	
-	@Scheduled(cron="0 0 12 * * *") 
-	public void moveTradeStart() throws URISyntaxException, ClientProtocolException, IOException {
+
+	@Async
+	public void moveTradeStart(String currency, int count) throws URISyntaxException, ClientProtocolException, IOException {
 		
-		moveTradeStart("BTC");		//1
-		moveTradeStart("XRP");		//2
-		moveTradeStart("DAWN");		//3
-		moveTradeStart("BTT");		//4
-		moveTradeStart("DOGE");		//5
-		moveTradeStart("STRK");		//6
-		moveTradeStart("VET");		//7
-		moveTradeStart("HIVE");		//8
-		moveTradeStart("SRM");		//9
-		moveTradeStart("ETC");		//10
+		moveTradeStart(currency);
 	}
 	
 	/**
@@ -175,24 +168,45 @@ public class UpbitService {
 				
 				if(bid_price >= target_price ) {		//현재가가격이 목표매수가보다 높다면 매수
 					
-					buy_price = bid_price;
+					if( buy_price > 0 ) {
+						
+						//log.info("[{}] 변동성 돌파 매수완료 (이미 매수){}",currency, String.format("%.8f", buy_price) );
+						
+					}else {
 					
-					log.info("[{}] 변동성 돌파 매수{}",currency, String.format("%.8f", buy_price) );
-					
-					telegram.sendPrivate("["+currency+"] 변동성 돌파 매수" + String.format("%.8f", buy_price) );
+						log.info("[{}] 변동성 돌파 매수{}",currency, String.format("%.8f", bid_price) );
+						
+						telegram.sendPrivate("["+currency+"] 변동성 돌파 매수" + String.format("%.8f", bid_price) );
+						
+						buy_price = bid_price;
+					}
 					
 					
 				}
 				
 			}
 			
-			
-			
-			try {
-				Thread.sleep(60*1000); //1분 대기
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			if( buy_price > 0 ) {
+				
+				log.info("[{}] 변동성 돌파 매수완료 (이미 매수) 매수가{}, 현재가{}, 수익률{}",currency, String.format("%.8f", buy_price) , String.format("%.8f", bid_price), String.format("%.2f", buy_price/bid_price*100));
+				
+				try {
+					Thread.sleep(5*60*1000); //5분 대기
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				
+			}else {
+				
+				try {
+					Thread.sleep(60*1000); //1분 대기
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				
 			}
+			
+			
 			
 		}
 		

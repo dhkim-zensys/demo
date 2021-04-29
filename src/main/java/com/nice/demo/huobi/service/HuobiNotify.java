@@ -41,7 +41,7 @@ public class HuobiNotify {
 	private HuobiService huobiService;
 	
 	
-	@Scheduled(fixedRate = 1800000)
+	@Scheduled(fixedRate = 3600000)
 	//@Scheduled(fixedRate = 10000)
     public void cronJobSch() {
       SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
