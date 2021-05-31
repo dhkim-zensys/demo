@@ -46,11 +46,7 @@ public class UpbitService {
 	private boolean bTrade = false; 
 	
 
-	@Async
-	public void moveTradeStart(String currency, int count) throws URISyntaxException, ClientProtocolException, IOException {
-		
-		moveTradeStart(currency);
-	}
+
 	
 	/**
 	 *  매일 12시 시작
@@ -71,7 +67,8 @@ public class UpbitService {
 	 * @throws IOException
 	 */
 
-	public void moveTradeStart(String currency) throws URISyntaxException, ClientProtocolException, IOException {
+	@Async
+	public void moveTradeStart(String currency, int rt) throws URISyntaxException, ClientProtocolException, IOException {
 		
 		
 		String market = "KRW-" + currency;
@@ -146,7 +143,7 @@ public class UpbitService {
 				
 				
 				//현재가
-				
+				sell_price = ask_price;
 				
 				//매수금액
 				if(buy_price > 0  ) {
@@ -188,7 +185,21 @@ public class UpbitService {
 			
 			if( buy_price > 0 ) {
 				
-				log.info("[{}] 변동성 돌파 매수완료 (이미 매수) 매수가{}, 현재가{}, 수익률{}",currency, String.format("%.8f", buy_price) , String.format("%.8f", bid_price), String.format("%.2f", buy_price/bid_price*100));
+				log.info("[{}] 변동성 돌파 매수완료 (이미 매수) 매수가{}, 현재가{}, 수익률{}",currency, String.format("%.8f", buy_price) , String.format("%.8f", ask_price), String.format("%.2f", ask_price/buy_price*100));
+				
+				
+				if(  buy_price/bid_price*100 >= rt ) { //목표변동성을 넘으면 매도
+					
+					sell_price = ask_price;
+					
+					log.info("[{}] 변동성 돌파 매수완료 매도  매수가{}, 매도가{}, 수익률{}",currency, String.format("%.8f", buy_price) , String.format("%.8f", sell_price), String.format("%.2f", sell_price/buy_price*100));
+					
+					
+					//매도 되었는지 확인후 종료
+					
+					return;
+				}
+				
 				
 				try {
 					Thread.sleep(5*60*1000); //5분 대기

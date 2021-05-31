@@ -115,7 +115,8 @@ public class UpbitNotify {
 			if( id > maxId) {
 				
 				notice.setId(String.valueOf(row.get("id")));
-				notice.setTitle((String)row.get("title"));
+//				notice.setTitle((String)row.get("title"));
+				notice.setTitle(String.valueOf(row.get("id")));
 				notice.setCreated_at((String)row.get("created_at"));
 				notice.setCreated_at((String)row.get("updated_at"));
 				

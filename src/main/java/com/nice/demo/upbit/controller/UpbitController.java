@@ -48,10 +48,10 @@ public class UpbitController {
 	
 	@ApiOperation(value="변동성 돌파  코인 매매 시작", notes="변동성 돌파  코인 매매 시작")
 	@GetMapping(value = "/v1/moveTradeStart")
-	public ResponseEntity<?> moveTradeStart(String currency) throws ClientProtocolException, URISyntaxException, IOException{
+	public ResponseEntity<?> moveTradeStart(String currency, int rt) throws ClientProtocolException, URISyntaxException, IOException{
 		 
 		
-		upbitService.moveTradeStart(currency);
+		upbitService.moveTradeStart(currency, rt);
 		
 		return entity;
 	}
